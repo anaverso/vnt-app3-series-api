@@ -1,6 +1,6 @@
 ## 👩‍💻 Sobre o Projeto
 
-Este aplicativo foi desenvolvido como parte de uma trilha de aprendizado em Flutter, promovida pelo **Instituto de Pesquisa Venturus. O foco deste projeto é a integração com APIs públicas, como a do [TVMaze](https://www.tvmaze.com/api), além da construção de uma interface responsiva e modularizada utilizando boas práticas com Flutter.
+Este aplicativo foi desenvolvido como parte de uma trilha de aprendizado em Flutter, promovida pelo **Instituto de Pesquisa Venturus**. O foco deste projeto é a integração com APIs públicas, como a do [TVMaze](https://www.tvmaze.com/api), além da construção de uma interface responsiva e modularizada utilizando boas práticas com Flutter.
 
 
 # 📺 TVMaze Search App
