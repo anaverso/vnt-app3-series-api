@@ -1,6 +1,11 @@
+## 👩‍💻 Sobre o Projeto
+
+Este aplicativo foi desenvolvido como parte de uma trilha de aprendizado em Flutter, promovida pelo **Instituto de Pesquisa Venturus**. O foco deste projeto é a integração com APIs públicas, como a do [TVMaze](https://www.tvmaze.com/api), além da construção de uma interface responsiva e modularizada utilizando boas práticas com Flutter.
+
+
 # 📺 TVMaze Search App
 
-Este é um app Flutter em desenvolvimento que consome a [API pública do TVMaze](https://www.tvmaze.com/api) para exibir informações sobre séries de TV. O aplicativo permite que o usuário pesquise séries pelo nome e visualize detalhes básicos de cada resultado.
+O aplicativo permite que o usuário pesquise séries pelo nome e visualize detalhes básicos de cada resultado.
 
 ---
 
