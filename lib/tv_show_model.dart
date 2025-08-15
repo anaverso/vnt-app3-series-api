@@ -28,12 +28,103 @@ class TvShow {
       summary: json['summary'] ?? 'Sem resumo disppnível.',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'imageUrl': imageUrl,
+      'name': name,
+      'webChannel': webChannel,
+      'rating': rating,
+      'summary': summary,
+    };
+  }
 }
 
 class TvShowModel extends ChangeNotifier {
-  final TvShowService _tvShowService = TvShowService();
-  final List<TvShow> _tvShows = [];
-  List<TvShow> get tvShows => _tvShows;
+  late final TvShowService _tvShowService;
+
+  TvShowModel() {
+    // Carregar as séries favoritas do banco de dados
+    _tvShowService = TvShowService();
+    initialize();
+  }
+
+  // estado das series favs
+  List<TvShow> _favTvShows = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  List<TvShow> get favTvShows => _favTvShows;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+  bool get hasFavorites => _favTvShows.isNotEmpty;
+
+  // BD
+  Future<void> initialize() async {
+    await load();
+  }
+
+  void _setLoading(bool isLoading) {
+    _isLoading = isLoading;
+    notifyListeners();
+  }
+
+  void _setError(String? error) {
+    _errorMessage = error;
+    notifyListeners();
+  }
+
+  Future<void> load() async {
+    try {
+      _setLoading(true);
+      _setError(null);
+      _favTvShows = await _tvShowService.getAll();
+    } catch (e) {
+      _setError('Falha ao carregar séries: ${e.toString()}');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> addToFavorites(TvShow tvShow) async {
+    await _tvShowService.insert(tvShow);
+    notifyListeners();
+  }
+
+  Future<void> removeFromFavorites(TvShow tvShow) async {
+    await _tvShowService.delete(tvShow.id);
+    notifyListeners();
+  }
+
+  Future<bool> isFavorite(TvShow tvShow) async {
+    try {
+      return await _tvShowService.isFavorite(tvShow);
+    } catch (e) {
+      _setError('Falha ao verificar se a série é favorita: ${e.toString()}');
+      return false;
+    }
+  }
+
+  // Ordena as séries favoritas por nome
+  void sortByName(bool ascending) {
+    _favTvShows.sort(
+      (a, b) => ascending ? a.name.compareTo(b.name) : b.name.compareTo(a.name),
+    );
+    notifyListeners();
+  }
+
+  // Ordena as séries favoritas por nota
+  void sortByRating(bool ascending) {
+    _favTvShows.sort(
+      (a, b) => ascending
+          ? a.rating.compareTo(b.rating)
+          : b.rating.compareTo(a.rating),
+    );
+    notifyListeners();
+  }
+
+  //API
 
   Future<TvShow> getTvShowById(int id) async {
     try {
@@ -52,7 +143,7 @@ class TvShowModel extends ChangeNotifier {
   }
 
   void addTvShow(TvShow tvShow, BuildContext context) {
-    tvShows.add(tvShow);
+    favTvShows.add(tvShow);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -66,10 +157,10 @@ class TvShowModel extends ChangeNotifier {
   }
 
   void removeTvShow(TvShow tvShow, BuildContext context) {
-    final index = tvShows.indexWhere(
+    final index = favTvShows.indexWhere(
       (show) => show.name.toLowerCase() == tvShow.name.toLowerCase(),
     );
-    tvShows.removeAt(index);
+    favTvShows.removeAt(index);
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -78,7 +169,7 @@ class TvShowModel extends ChangeNotifier {
         action: SnackBarAction(
           label: 'DESFAZER',
           onPressed: () {
-            tvShows.insert(index, tvShow);
+            favTvShows.insert(index, tvShow);
             notifyListeners();
           },
         ),
@@ -88,8 +179,8 @@ class TvShowModel extends ChangeNotifier {
   }
 
   void editTvShow(TvShow oldTvShow, TvShow newTvShow, BuildContext context) {
-    final index = tvShows.indexOf(oldTvShow);
-    tvShows[index] = newTvShow;
+    final index = favTvShows.indexOf(oldTvShow);
+    favTvShows[index] = newTvShow;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Série ${index + 1} atualizada!'),
